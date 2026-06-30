@@ -1,0 +1,112 @@
+rules_version = '2';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SmartBus Firestore security rules — role-based access control.
+//
+// Roles live in /roles/{uid} with a `role` field of:
+//   'school_admin' | 'bus_admin' | 'parent'
+//
+// NOTE: The on-bus Raspberry Pi writes via the Firebase Admin SDK, which
+// bypasses these rules entirely. These rules therefore only constrain the
+// browser dashboards. Deploy with:  firebase deploy --only firestore:rules
+// ─────────────────────────────────────────────────────────────────────────────
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function roleOf() {
+      // The caller's role document. Assumes /roles/{uid} exists.
+      return get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role;
+    }
+
+    function hasRole(r) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+        && roleOf() == r;
+    }
+
+    function isAdmin() {
+      return hasRole('bus_admin') || hasRole('school_admin');
+    }
+
+    // True if the caller is a parent whose role doc lists `studentName`.
+    // Supports both schemas the client tolerates: `childNames` (array) and
+    // `childName` (single string). Costs one extra document read per call.
+    function isParentOfStudent(studentName) {
+      let role = get(/databases/$(database)/documents/roles/$(request.auth.uid)).data;
+      return hasRole('parent') && (
+        studentName in role.get('childNames', [])
+        || studentName == role.get('childName', '')
+      );
+    }
+
+    // ── roles ────────────────────────────────────────────────────────────────
+    // A user may read their own role (needed at login). School admins may read
+    // all roles. Only school admins may create/modify role assignments.
+    match /roles/{uid} {
+      allow read:  if isSignedIn() && (request.auth.uid == uid || hasRole('school_admin'));
+      allow write: if hasRole('school_admin');
+    }
+
+    // ── users (student records) ──────────────────────────────────────────────
+    // Admins read the full roster; parents are scoped to their own children
+    // (matched by the `name` field on the student document). Only admins write.
+    match /users/{userId} {
+      allow read:  if isAdmin()
+                   || (hasRole('parent') && isParentOfStudent(resource.data.name));
+      allow write: if isAdmin();
+    }
+
+    // ── attendance ───────────────────────────────────────────────────────────
+    // Admins read all records. Parents read only records for their own children
+    // (matched on the `name` field, the same field the dashboard already
+    // filters on). Manual entries / exceptions / removals stay admin-only.
+    // The Pi writes face-scan records via the Admin SDK and is unaffected.
+    match /attendance/{recordId} {
+      allow read:   if isAdmin()
+                    || (hasRole('parent') && isParentOfStudent(resource.data.name));
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── bus_location ─────────────────────────────────────────────────────────
+    // Read-only for clients; GPS updates come exclusively from the Pi via the
+    // Admin SDK.
+    match /bus_location/{busId} {
+      allow read:  if isSignedIn();
+      allow write: if false;
+    }
+
+    // ── buses (fleet config: route, driver, supervisor, capacity) ────────────
+    // Readable by any signed-in user; only school admins manage the roster.
+    match /buses/{busId} {
+      allow read:  if isSignedIn();
+      allow write: if hasRole('school_admin');
+    }
+
+    // ── notifications ────────────────────────────────────────────────────────
+    // Admins create alerts. Non-admins (parents) may "dismiss" an alert, which
+    // only appends their role to `readBy` — the rule below enforces that the
+    // update touches no other field. Admins may change anything.
+    match /notifications/{notifId} {
+      allow read:   if isSignedIn();
+      allow create: if isAdmin();
+      allow update: if isAdmin()
+                    || (isSignedIn()
+                        && request.resource.data.diff(resource.data)
+                             .affectedKeys().hasOnly(['readBy']));
+      allow delete: if hasRole('school_admin');
+    }
+
+    // ── default deny ─────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

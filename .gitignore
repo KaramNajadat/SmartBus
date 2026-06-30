@@ -1,0 +1,25 @@
+# ─── Secrets & credentials (NEVER COMMIT) ───────────────────────────────
+**/serviceAccountKey.json
+**/*serviceAccount*.json
+**/.env
+**/.env.*
+!**/.env.example
+
+# ─── Python ──────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ─── Node / frontend ─────────────────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+*.local
+*.log
+
+# ─── Editor / OS ─────────────────────────────────────────────────────────
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
