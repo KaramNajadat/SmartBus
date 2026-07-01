@@ -196,10 +196,10 @@ smartbus/
 
 | Member | Role |
 |---|---|
-| Ayham Mamoun Smadi | <!-- TODO: fill in (e.g. "Frontend dashboard, alert system, i18n") --> |
-| Karam Ahmad Najadat | <!-- TODO: fill in --> |
-| Karim Ehab Abdelfattah | <!-- TODO: fill in --> |
-| Yaman Ayoub Dawood | <!-- TODO: fill in --> |
+| Ayham Mamoun Smadi | GPS tracking pipeline, live map & OSRM routing, evaluation harness, initial repo setup |
+| Karam Ahmad Najadat | Bus-operations mode logic, alerts & notifications, face-recognition tuning |
+| Karim Ehab Abdelfattah | Parent dashboard history & attendance UX |
+| Yaman Ayoub Dawood | School-admin fleet views, Vercel/Firebase deployment |
 
 **Supervisor:** Dr. Khalid Ali Ammar, Ajman University
 
