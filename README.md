@@ -2,6 +2,7 @@
 
 **AI-powered school bus safety system — on-bus face recognition, real-time GPS tracking, and a role-based React dashboard.**
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-smartbus--mauve.vercel.app-brightgreen?logo=vercel&logoColor=white)](https://smartbus-mauve.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
@@ -99,7 +100,7 @@ Details for each path are below.
 
 ## Live demo
 
-<!-- Live demo URL goes here once deployed to Vercel — update the badge and link -->
+**Deployed at → [smartbus-mauve.vercel.app](https://smartbus-mauve.vercel.app)**
 
 Read-only browsing of pre-seeded data. The dashboard runs against the `smartbus-showcase` Firebase project on the Spark (free) plan so demo usage cannot incur cost. The seeded data is read-only for the parent role; bus and school admin demo accounts have write access against the showcase project's Firestore (not real data), so don't be alarmed if you see test attendance from another visitor.
 
