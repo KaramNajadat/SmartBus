@@ -92,7 +92,7 @@ class FirebaseService:
                     "name": {"stringValue": name},
                     "permission": {"stringValue": permission},
                     "active": {"booleanValue": active},
-                    "bus_id": {"stringValue": bus_id},
+                    "busId": {"stringValue": bus_id},
                     "bus_mode": {"stringValue": bus_mode},
                     "date": {"stringValue": now.strftime("%Y-%m-%d")},
                     "time": {"stringValue": now.strftime("%H:%M:%S")},
