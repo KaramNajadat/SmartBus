@@ -39,6 +39,8 @@ face_project/
 
 ### 1. Install dependencies
 
+> **Use Python 3.11.** `face-recognition`/`dlib` don't yet ship prebuilt wheels for Python 3.14, and installation will fail there.
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -105,6 +107,8 @@ attendance/{auto-id}
 ├── name:        "Ayham"
 ├── permission:  "Student"
 ├── active:      true
+├── busId:       "BUS_01"
+├── bus_mode:    "morning_pickup"
 ├── timestamp:   "2026-03-06T08:32:11"
 ├── date:        "2026-03-06"
 └── time:        "08:32:11"
@@ -130,7 +134,7 @@ In `main.py`, adjust these constants:
 |---|---|---|
 | `TOLERANCE` | `0.5` | Lower = stricter. Try `0.45` if false matches occur. |
 | `COOLDOWN_SEC` | `5` | Seconds between re-logging the same person. |
-| `FRAME_SCALE` | `0.5` | `0.25` for faster CPU, `0.75` for better accuracy. |
+| `FRAME_SCALE` | `0.65` | Lower for faster CPU, higher (up to `1.0`) for better accuracy. |
 
 ---
 

@@ -110,7 +110,7 @@ Evaluated on the four-person team gallery (deliberately one enrollment photo per
 |---|---|
 | Average recognition latency (Pi 5) | 1.89 s end-to-end |
 | Tolerance | 0.50 |
-| Frame downscale during scan | 0.5× |
+| Frame downscale during scan | 0.65× |
 | Hardware budget per bus | ~1,500 AED (~410 USD) |
 | Total recognition events logged in evaluation | 40 |
 
