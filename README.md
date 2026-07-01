@@ -75,6 +75,33 @@ A Raspberry Pi 5 on the bus runs the recognition pipeline and a GPS thread, both
 | i18n | react-i18next 17 | English + Arabic with RTL |
 | Icons | lucide-react | |
 
+
+## Standards & compliance
+
+- **IEEE 802.11** (Wi-Fi) — Pi-to-Firestore link
+- **TLS** — all Firebase traffic encrypted, enforced by the SDKs (not optional)
+- **JSON (RFC 8259)** — Firestore document format
+- **PEP 8** — Python pipeline style
+- **ECMA-262** — React/Vite frontend
+- **JPEG (ISO/IEC 10918)** — enrollment photo format
+- **ISO/IEC JTC 1/SC 42** (AI standards) — documented decision threshold (tolerance 0.50), reproducible training baseline (dlib on Labeled Faces in the Wild), and disclosed model limitations
+
+
+## Hardware build
+
+| Component | Model | Key specs |
+|---|---|---|
+| Processing unit | Raspberry Pi 5 (8 GB) | Quad-core Cortex-A76 @ 2.4 GHz |
+| Camera | Logitech C920S | 1080p, autofocus, low-light correction, USB |
+| GPS module | u-blox NEO-6M | UART @ 9600 baud, NMEA 0183, 1 Hz fix, ~2.5 m CEP |
+| Power (deployment) | DC-DC buck converter | Bus 12–24 V → regulated 5 V @ 5 A, wired to bus fuse box |
+| Power (bench testing) | Official Pi 5 27 W PSU | — |
+| Cooling | Active heatsink + fan | Direct SoC contact, rated for continuous load |
+| Storage | 64 GB microSD | Class 10 / A1 |
+
+The GPS module connects over the Pi's GPIO UART pins (physical pin 8 = GPIO14 TXD, pin 10 = GPIO15 RXD). In deployment the unit is hardwired into the bus's own electrical system via the buck converter rather than running on battery, so it powers on with the bus and needs no separate charging.
+
+
 ## Results
 
 Evaluated on the four-person team gallery (deliberately one enrollment photo per student, to mirror the real-world case where schools typically have a single ID photo on file).
@@ -89,6 +116,24 @@ Evaluated on the four-person team gallery (deliberately one enrollment photo per
 
 A larger evaluation with non-team subjects and a confusion matrix is on the roadmap — see [Limitations](#limitations--future-work).
 
+
+### Per-student latency
+
+| Student | Avg (s) | Min (s) | Max (s) |
+|---|---|---|---|
+| Yaman | 2.14 | 1.34 | 4.23 |
+| Ayham | 1.68 | 0.88 | 2.85 |
+| Karam | 1.97 | 1.13 | 3.07 |
+| Karim | 1.76 | 0.89 | 3.02 |
+| **Overall** | **1.89** | **0.88** | **4.23** |
+
+### Hardware reliability
+
+- Pi 5 CPU stayed under **59.3°C** across 15 minutes of continuous recognition, with `vcgencmd get_throttled` returning `0x0` (no throttling) at every check.
+- GPS cold-start fix acquisition averaged **55.4 s** across 3 trials (52.4 / 55.7 / 58.2 s); once locked, maintained a steady 1 Hz NMEA output and 10 s Firestore write cadence.
+- Camera ran continuously through all test sessions with zero frame loss.
+
+  
 ## Two ways to try it
 
 There are two paths to explore SmartBus, depending on what you want to see:
@@ -219,8 +264,9 @@ We'd rather be honest about what this project does and does not yet prove:
 
 - **Evaluation breadth**: results come from a four-person team gallery with one enrollment photo each (a deliberate choice to mirror the real ID-photo workflow, but small). An independent test set with varied lighting, accessories, and demographics is planned.
 - **Metrics depth**: average latency is reported; precision, recall, F1, and a confusion matrix have not yet been published — `evaluate.py` exists to support this and will be exercised on a larger test set.
-- **Latency outliers**: two events in the current evaluation took 3.07 s and 4.23 s respectively. Root cause is not yet pinned down.
-- **Scale**: not tested beyond four students and one bus. Firestore cost at ~500 buses (estimated ~4.3 M writes/day) has not been benchmarked.
+- **Latency outliers**: two events took 3.07 s and 4.23 s. Root cause identified: both were Firebase write delay under a momentary network stall, not the local recognition step — the attendance write is enqueued on a background thread, so recognition itself stayed fast in both cases.
+- **No offline write queue**: attendance and GPS writes are not buffered or retried if the network drops mid-transmission — a record lost to a dead zone is lost. This is the top priority for the next iteration.
+- **Scale**: not tested beyond four students and one bus. Firestore cost at fleet scale has not been benchmarked.
 - **Demo write-protection**: bus-admin and school-admin demo accounts can still write to Firestore. Acceptable for first publication — worst case is a re-seed.
 - **App Check** (reCAPTCHA-gated requests) is not yet enabled on the showcase project.
 
