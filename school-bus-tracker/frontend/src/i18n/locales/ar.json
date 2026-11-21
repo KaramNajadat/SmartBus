@@ -64,7 +64,16 @@
     "errResetUserNotFound": "لا يوجد حساب بهذا البريد الإلكتروني.",
     "errResetInvalidEmail": "يرجى إدخال بريد إلكتروني صالح.",
     "errResetTooMany": "طلبات كثيرة جدًا. يرجى المحاولة لاحقًا.",
-    "errResetGeneric": "فشل إرسال بريد إعادة التعيين. يرجى المحاولة مرة أخرى."
+    "errResetGeneric": "فشل إرسال بريد إعادة التعيين. يرجى المحاولة مرة أخرى.",
+    "demoTitle": "حسابات تجريبية",
+    "demoNote": "استخدم أحد هذه الحسابات لتسجيل الدخول واستكشاف كل دور.",
+    "demoRoleParent": "ولي الأمر",
+    "demoRoleBusAdmin": "مشرف الحافلة",
+    "demoRoleSchoolAdmin": "مشرف المدرسة",
+    "demoEmail": "البريد الإلكتروني",
+    "demoPassword": "كلمة المرور",
+    "demoClose": "حسنًا",
+    "demoShow": "عرض الحسابات التجريبية"
   },
   "unauthorized": {
     "title": "وصول غير مصرّح",
