@@ -19,6 +19,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
 
+  // Demo accounts pop-up (opens automatically on the sign-in page)
+  const [showDemoInfo, setShowDemoInfo] = useState(true);
+  const demoAccounts = [
+    { role: t('login.demoRoleParent'), email: 'demo.parent@example.com', password: 'DemoParent-9R7kX2Lq' },
+    { role: t('login.demoRoleBusAdmin'), email: 'demo.busadmin@example.com', password: 'DemoBusAdmin-4Vn8Mt6Z' },
+    { role: t('login.demoRoleSchoolAdmin'), email: 'demo.schooladmin@example.com', password: 'DemoSchoolAdmin-7Hb3Pq9F' },
+  ];
+
   // Show session expired banner if redirected from ProtectedRoute
   const sessionExpired = location.state?.sessionExpired === true;
 
@@ -400,10 +408,104 @@ export default function LoginPage() {
           </button>
         </form>
 
+        <button
+          type="button"
+          style={styles.backLink}
+          onClick={() => setShowDemoInfo(true)}
+        >
+          {t('login.demoShow')}
+        </button>
+
         <div style={{ marginTop: spacing[6], textAlign: 'center' }}>
           <LanguageSwitcher variant="inline" />
         </div>
       </div>
+
+      {/* Demo accounts pop-up */}
+      {showDemoInfo && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: spacing[4],
+            zIndex: 1000,
+          }}
+          onClick={() => setShowDemoInfo(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="demo-accounts-title"
+            style={{
+              backgroundColor: colors.cards,
+              border: `1px solid ${colors.borders}`,
+              borderRadius: radii.lg,
+              boxShadow: shadows.lg,
+              padding: spacing[6],
+              maxWidth: '420px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxSizing: 'border-box',
+              fontFamily: typography.fontFamily,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2
+              id="demo-accounts-title"
+              style={{
+                color: colors.textPrimary,
+                fontSize: typography.sizes.xl,
+                fontWeight: typography.weights.bold,
+                margin: `0 0 ${spacing[2]} 0`,
+                textAlign: 'center',
+              }}
+            >
+              {t('login.demoTitle')}
+            </h2>
+            <p style={{ ...styles.subtitle, marginBottom: spacing[4] }}>{t('login.demoNote')}</p>
+
+            {demoAccounts.map((acc) => (
+              <div
+                key={acc.email}
+                style={{
+                  backgroundColor: colors.background,
+                  border: `1px solid ${colors.borders}`,
+                  borderRadius: radii.sm,
+                  padding: spacing[3],
+                  marginBottom: spacing[3],
+                  fontSize: typography.sizes.sm,
+                  color: colors.textSecondary,
+                }}
+              >
+                <div style={{ color: colors.textPrimary, fontWeight: typography.weights.semibold, marginBottom: spacing[1] }}>
+                  {acc.role}
+                </div>
+                <div>
+                  {t('login.demoEmail')}:{' '}
+                  <code dir="ltr" style={{ color: colors.textPrimary, userSelect: 'all', wordBreak: 'break-all' }}>{acc.email}</code>
+                </div>
+                <div>
+                  {t('login.demoPassword')}:{' '}
+                  <code dir="ltr" style={{ color: colors.textPrimary, userSelect: 'all', wordBreak: 'break-all' }}>{acc.password}</code>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              style={{ ...styles.button, cursor: 'pointer', opacity: 1, marginTop: spacing[2] }}
+              onClick={() => setShowDemoInfo(false)}
+            >
+              {t('login.demoClose')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

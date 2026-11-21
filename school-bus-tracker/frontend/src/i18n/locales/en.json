@@ -64,7 +64,16 @@
     "errResetUserNotFound": "No account found with this email address.",
     "errResetInvalidEmail": "Please enter a valid email address.",
     "errResetTooMany": "Too many requests. Please try again later.",
-    "errResetGeneric": "Failed to send reset email. Please try again."
+    "errResetGeneric": "Failed to send reset email. Please try again.",
+    "demoTitle": "Demo Accounts",
+    "demoNote": "Use one of these accounts to sign in and explore each role.",
+    "demoRoleParent": "Parent",
+    "demoRoleBusAdmin": "Bus Admin",
+    "demoRoleSchoolAdmin": "School Admin",
+    "demoEmail": "Email",
+    "demoPassword": "Password",
+    "demoClose": "Got it",
+    "demoShow": "Show demo accounts"
   },
   "unauthorized": {
     "title": "Unauthorized Access",
